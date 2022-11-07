@@ -23,3 +23,21 @@ exports.greetManyTimes = (call, _) => {
 
 	call.end();
 };
+
+// client streaming
+
+exports.longGreet = (call, callback) => {
+	console.log('LongGreet was invoked');
+
+	let greeting = '';
+
+	call.on('data', (req) => {
+		greeting += `Hello ${req.getFirstName()}\n`;
+	});
+
+	call.on('end', () => {
+		const res = new pb.GreetResponse().setResult(greeting);
+
+		callback(null, res);
+	});
+};

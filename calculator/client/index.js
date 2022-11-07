@@ -2,6 +2,7 @@ const grpc = require('@grpc/grpc-js');
 const { CalculatorServiceClient } = require('../proto/calculator_grpc_pb');
 const { SumRequest } = require('../proto/sum_pb');
 const { PrimesRequest } = require('../proto/primes_pb');
+const { AverageRequest } = require('../proto/average_pb');
 
 function calculateSum(client) {
 	console.log('calculator was invoked');
@@ -29,12 +30,35 @@ function calculatePrimes(client) {
 	});
 }
 
+function calculateAverage(client) {
+	console.log('average client was invoked');
+
+	const nums = [8, 9, 10, 15, 44, 19, 32];
+
+	const call = client.average((err, res) => {
+		if (err) {
+			return console.log(err);
+		}
+
+		console.log(`Average: ${res.getAverageResult()}`);
+	});
+
+	nums
+		.map((num) => {
+			return new AverageRequest().setInputNumber(num);
+		})
+		.forEach((req) => call.write(req));
+
+	call.end();
+}
+
 function main() {
 	const creds = grpc.ChannelCredentials.createInsecure();
 	const client = new CalculatorServiceClient('localhost:50051', creds);
 
 	// calculateSum(client);
-	calculatePrimes(client);
+	// calculatePrimes(client);
+	calculateAverage(client);
 	client.close();
 }
 

@@ -1,5 +1,6 @@
 const { SumResponse } = require('../proto/sum_pb');
 const { PrimesResponse } = require('../proto/primes_pb');
+const { AverageResponse } = require('../proto/average_pb');
 
 exports.calculator = (call, callback) => {
 	console.log('Calculator was invoked');
@@ -33,4 +34,23 @@ exports.primes = (call, _) => {
 	}
 
 	call.end();
+};
+
+exports.average = (call, callback) => {
+	console.log('Average has been invoked');
+
+	let currentTotal = 0;
+	let numberOfRequests = 0;
+
+	call.on('data', (req) => {
+		currentTotal += req.getInputNumber();
+		numberOfRequests++;
+	});
+
+	call.on('end', () => {
+		const avg = currentTotal / numberOfRequests;
+		const res = new AverageResponse().setAverageResult(avg);
+
+		callback(null, res);
+	});
 };
