@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package calculator;
+
+message PrimesRequest {
+    int32 prime_number = 1;
+}
+
+message PrimesResponse {
+    int32 prime_result = 1;
+}
